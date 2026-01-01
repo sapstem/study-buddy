@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
 const genAI = new GoogleGenerativeAI(API_KEY)
 
-function SummarizerPage() {
+function summarizerPage() {
   const [noteText, setNoteText] = useState('')
   const [summary, setSummary] = useState('')
   const [savedSummaries, setSavedSummaries] = useState([])
