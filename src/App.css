@@ -8,7 +8,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #f5f5f7 0%, #e8e8ea 100%);
+  background: #f5f5f7;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
@@ -29,7 +29,7 @@ h1 {
 }
 
 .typing-text {
-  background: linear-gradient(135deg, #86A789 0%, #739072 100%);
+  background: linear-gradient(135deg, #0071e3 0%, #005bb5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -38,7 +38,7 @@ h1 {
 }
 
 .cursor {
-  color: #86A789;
+  color: #0071e3;
   animation: blink 1s infinite;
 }
 
@@ -62,7 +62,7 @@ h1 {
   border-radius: 20px;
   padding: 32px;
   margin-bottom: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
@@ -83,9 +83,9 @@ textarea {
 
 textarea:focus {
   outline: none;
-  border-color: #86A789;
+  border-color: #0071e3;
   background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 0 0 4px rgba(134, 167, 137, 0.1);
+  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
 }
 
 textarea::placeholder {
@@ -93,7 +93,7 @@ textarea::placeholder {
 }
 
 button {
-  background: #1d1d1f;
+  background: #0071e3;
   color: white;
   border: none;
   padding: 16px 32px;
@@ -111,9 +111,9 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background: #2d2d2f;
+  background: #0077ed;
   transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 24px rgba(0, 113, 227, 0.25);
 }
 
 button:active:not(:disabled) {
@@ -132,7 +132,7 @@ button:disabled {
   border-radius: 20px;
   padding: 28px;
   margin-bottom: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
@@ -172,7 +172,7 @@ button:disabled {
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 16px;
@@ -182,7 +182,7 @@ button:disabled {
 
 .saved-summary-item:hover {
   background: rgba(255, 255, 255, 0.8);
-  border-color: rgba(134, 167, 137, 0.3);
+  border-color: rgba(0, 113, 227, 0.2);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
@@ -219,14 +219,13 @@ button:disabled {
 
 .badge {
   display: inline-block;
-  background: rgba(134, 167, 137, 0.15);
-  color: #739072;
+  background: rgba(0, 113, 227, 0.1);
+  color: #0071e3;
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 24px;
   letter-spacing: 0.02em;
-  border: 1px solid rgba(134, 167, 137, 0.2);
+  border: 1px solid rgba(0, 113, 227, 0.15);
 }
-

@@ -5,12 +5,21 @@ import './App.css'
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
 const genAI = new GoogleGenerativeAI(API_KEY)
 
+const ROTATING_WORDS = ['summaries', 'flashcards', 'study guides', 'notes', 'quizzes']
+
 function App() {
   const [noteText, setNoteText] = useState('')
   const [summary, setSummary] = useState('')
   const [savedSummaries, setSavedSummaries] = useState([])
   const [loading, setLoading] = useState(false)
+  const [showApp, setShowApp] = useState(false)
+  
+  // typing animation states
+  const [currentWordIndex, setCurrentWordIndex] = useState(0)
+  const [currentText, setCurrentText] = useState('')
+  const [isDeleting, setIsDeleting] = useState(false)
 
+  // localstorage effects
   useEffect(() => {
     const saved = localStorage.getItem('summaries')
     if (saved) {
@@ -23,6 +32,31 @@ function App() {
       localStorage.setItem('summaries', JSON.stringify(savedSummaries))
     }
   }, [savedSummaries])
+
+  // typing animation effect
+  useEffect(() => {
+    const word = ROTATING_WORDS[currentWordIndex]
+    const typingSpeed = isDeleting ? 50 : 100
+    
+    const timer = setTimeout(() => {
+      if (!isDeleting) {
+        if (currentText.length < word.length) {
+          setCurrentText(word.substring(0, currentText.length + 1))
+        } else {
+          setTimeout(() => setIsDeleting(true), 1500)
+        }
+      } else {
+        if (currentText.length > 0) {
+          setCurrentText(currentText.substring(0, currentText.length - 1))
+        } else {
+          setIsDeleting(false)
+          setCurrentWordIndex((currentWordIndex + 1) % ROTATING_WORDS.length)
+        }
+      }
+    }, typingSpeed)
+
+    return () => clearTimeout(timer)
+  }, [currentText, isDeleting, currentWordIndex])
 
   const handleSummarize = async () => {
     if (!noteText.trim()) {
@@ -57,47 +91,87 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <h1>Note Summarizer</h1>
-      
-      <textarea 
-        value={noteText}
-        onChange={(e) => setNoteText(e.target.value)}
-        placeholder="Paste your notes here..."
-        rows="10"
-        style={{ width: '100%', padding: '10px', marginBottom: '10px' }}
-      />
-      
-      <button 
-        onClick={handleSummarize} 
-        disabled={loading}
-        style={{ padding: '10px 20px', cursor: loading ? 'wait' : 'pointer' }}
-      >
-        {loading ? 'Summarizing...' : 'Summarize'}
-      </button>
+    <>
+      <nav className="nav">
+        <div className="logo">Sage</div>
+        <button className="nav-cta" onClick={() => setShowApp(true)}>Get Started</button>
+      </nav>
 
-      {summary && (
-        <div className="summary" style={{ marginTop: '20px', padding: '10px', border: '1px solid #ccc' }}>
-          <h3>Summary:</h3>
-          <p>{summary}</p>
+      <div className="App">
+        <div className="badge">✨ AI-Powered</div>
+        <h1>
+          An AI tutor made for <span className="typing-text">{currentText}</span>
+          <span className="cursor">|</span>
+        </h1>
+        <p className="subtitle">
+          Transform your notes into summaries, flashcards, and study guides in seconds
+        </p>
+        
+        <div className="cta-group">
+          <button className="cta-primary" onClick={() => setShowApp(true)}>Start Learning</button>
+          <button className="cta-secondary" onClick={() => setShowApp(true)}>Try for Free</button>
         </div>
-      )}
-
-      <div style={{ marginTop: '40px' }}>
-        <h2>Saved Summaries</h2>
-        {savedSummaries.length === 0 ? (
-          <p>No saved summaries yet</p>
-        ) : (
-          savedSummaries.map(item => (
-            <div key={item.id} style={{ border: '1px solid #ddd', padding: '10px', marginBottom: '10px' }}>
-              <small>{item.date}</small>
-              <p><strong>Notes:</strong> {item.text.substring(0, 100)}...</p>
-              <p><strong>Summary:</strong> {item.summary}</p>
-            </div>
-          ))
-        )}
       </div>
-    </div>
+
+      <div className={`app-section ${!showApp ? 'hidden' : ''}`}>
+        <div className="input-section">
+          <textarea 
+            value={noteText}
+            onChange={(e) => setNoteText(e.target.value)}
+            placeholder="Paste your lecture notes, study materials, or any text you want summarized..."
+            rows="10"
+          />
+          
+          <button 
+            className="action-btn"
+            onClick={handleSummarize} 
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <span>⏳</span>
+                <span>Analyzing with AI...</span>
+              </>
+            ) : (
+              <>
+                <span>🚀</span>
+                <span>Generate Summary</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        {summary && (
+          <div className="summary">
+            <h3>
+              <span>💡</span>
+              <span>AI Summary</span>
+            </h3>
+            <p>{summary}</p>
+          </div>
+        )}
+
+        <div className="saved-summaries">
+          <h2>
+            <span>📚</span>
+            <span>Your Summaries</span>
+          </h2>
+          {savedSummaries.length === 0 ? (
+            <p className="no-summaries">
+              No saved summaries yet. Create your first AI summary above!
+            </p>
+          ) : (
+            savedSummaries.map(item => (
+              <div key={item.id} className="saved-summary-item">
+                <small>📅 {item.date}</small>
+                <p><strong>Original Notes:</strong> {item.text.substring(0, 150)}{item.text.length > 150 ? '...' : ''}</p>
+                <p><strong>AI Summary:</strong> {item.summary}</p>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </>
   )
 }
 
