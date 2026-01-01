@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import './App.css'
 
-const API_KEY = 'AIzaSyAZSOsfu9e7bR73ojaGnQyR69i2cGZw_j4'
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
 const genAI = new GoogleGenerativeAI(API_KEY)
 
 function App() {
