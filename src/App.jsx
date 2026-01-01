@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import './App.css'
+
+const API_KEY = 'AIzaSyAZSOsfu9e7bR73ojaGnQyR69i2cGZw_j4'
+const genAI = new GoogleGenerativeAI(API_KEY)
 
 function App() {
   const [noteText, setNoteText] = useState('')
   const [summary, setSummary] = useState('')
   const [savedSummaries, setSavedSummaries] = useState([])
+  const [loading, setLoading] = useState(false)
 
-  // Load saved summaries from localStorage when app starts
   useEffect(() => {
     const saved = localStorage.getItem('summaries')
     if (saved) {
@@ -14,22 +18,42 @@ function App() {
     }
   }, [])
 
-  // Save to localStorage whenever savedSummaries changes
   useEffect(() => {
     if (savedSummaries.length > 0) {
       localStorage.setItem('summaries', JSON.stringify(savedSummaries))
     }
   }, [savedSummaries])
 
-  const handleSummarize = () => {
-    const newSummary = {
-      id: Date.now(),
-      text: noteText,
-      summary: 'This is a summary of your notes',
-      date: new Date().toLocaleString()
+  const handleSummarize = async () => {
+    if (!noteText.trim()) {
+      alert('Please enter some notes to summarize')
+      return
     }
-    setSummary(newSummary.summary)
-    setSavedSummaries([newSummary, ...savedSummaries])
+
+    setLoading(true)
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
+      const prompt = `Summarize the following notes in a concise way:\n\n${noteText}`
+      
+      const result = await model.generateContent(prompt)
+      const response = await result.response
+      const summaryText = response.text()
+      
+      const newSummary = {
+        id: Date.now(),
+        text: noteText,
+        summary: summaryText,
+        date: new Date().toLocaleString()
+      }
+      
+      setSummary(summaryText)
+      setSavedSummaries([newSummary, ...savedSummaries])
+    } catch (error) {
+      console.error('Error:', error)
+      alert('Failed to generate summary. Check your API key.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -44,8 +68,12 @@ function App() {
         style={{ width: '100%', padding: '10px', marginBottom: '10px' }}
       />
       
-      <button onClick={handleSummarize} style={{ padding: '10px 20px', cursor: 'pointer' }}>
-        Summarize
+      <button 
+        onClick={handleSummarize} 
+        disabled={loading}
+        style={{ padding: '10px 20px', cursor: loading ? 'wait' : 'pointer' }}
+      >
+        {loading ? 'Summarizing...' : 'Summarize'}
       </button>
 
       {summary && (
