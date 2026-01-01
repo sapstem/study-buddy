@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
-import LandingPage from './landingPage'
-import SummarizerPage from './summarizerPage'
+import LandingPage from './LandingPage'
+import SummarizerPage from './SummarizerPage'
 import './App.css'
 
 function App() {
