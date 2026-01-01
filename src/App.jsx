@@ -5,7 +5,7 @@ import './App.css'
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
 const genAI = new GoogleGenerativeAI(API_KEY)
 
-const ROTATING_WORDS = ['summaries', 'flashcards', 'study guides', 'notes', 'quizzes']
+const ROTATING_WORDS = ['summaries', 'flashcards', 'study guides', 'exam practice', 'quizzes']
 
 function App() {
   const [noteText, setNoteText] = useState('')
@@ -103,12 +103,11 @@ function App() {
 
       <div className="App">
         <h1>
-          An AI tutor made for <span className="typing-text">{currentText}</span>
+          Turn your notes into <span className="typing-text">{currentText}</span>
           <span className="cursor">|</span>
         </h1>
         <p className="subtitle">
-          Transform your notes into summaries, flashcards, and study guides in seconds
-        </p>
+          Sage creates a complete study pack from your notes, including summaries, key topics, flashcards, quizzes, and an AI tutor that answers questions using your material.        </p>
         
         <div className="cta-group">
           <button className="cta-primary" onClick={() => setShowApp(true)}>Start Learning</button>
