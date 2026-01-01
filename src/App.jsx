@@ -92,6 +92,10 @@ function App() {
 
   return (
     <>
+    <video autoPlay loop muted playsInline className="video-background">
+      <source src="/background.mp4" type="video/mp4" />
+      </video>
+
       <nav className="nav">
         <div className="logo">Sage</div>
         <button className="nav-cta" onClick={() => setShowApp(true)}>Get Started</button>
