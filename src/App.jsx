@@ -98,7 +98,6 @@ function App() {
       </nav>
 
       <div className="App">
-        <div className="badge">✨ AI-Powered</div>
         <h1>
           An AI tutor made for <span className="typing-text">{currentText}</span>
           <span className="cursor">|</span>
@@ -109,7 +108,6 @@ function App() {
         
         <div className="cta-group">
           <button className="cta-primary" onClick={() => setShowApp(true)}>Start Learning</button>
-          <button className="cta-secondary" onClick={() => setShowApp(true)}>Try for Free</button>
         </div>
       </div>
 
