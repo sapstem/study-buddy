@@ -40,7 +40,7 @@ function LandingPage() {
       {/* Hero Section - Your existing content */}
       <section className="hero-section">
         <h1 className="hero-title">
-          An AI tutor made for{' '}
+          A smarter way to study for{' '}
           <span className="typing-container">
             <span className="typing-text" data-text={currentText}>
               {currentText}
@@ -60,36 +60,49 @@ function LandingPage() {
       </section>
 
       {/* New Features Section - Add this below */}
-      <section className="features-section">
-        <h2 className="section-title">Powerful Learning Features</h2>
-        <p className="section-subtitle">Everything you need to study smarter</p>
-        
-        <div className="features-grid">
-          <div className="feature-card">
-            <div className="feature-icon">🤖</div>
-            <h3>AI Summarizer</h3>
-            <p>Get concise summaries of long lectures, articles, or textbooks in seconds. Perfect for quick reviews.</p>
-          </div>
-          
-          <div className="feature-card">
-            <div className="feature-icon">🎴</div>
-            <h3>Smart Flashcards</h3>
-            <p>Automatically generate flashcards from your notes with spaced repetition for better retention.</p>
-          </div>
-          
-          <div className="feature-card">
-            <div className="feature-icon">📊</div>
-            <h3>Progress Tracking</h3>
-            <p>Monitor your learning progress with detailed analytics and personalized study recommendations.</p>
-          </div>
-          
-          <div className="feature-card">
-            <div className="feature-icon">⚡</div>
-            <h3>Quick Study Guides</h3>
-            <p>Generate study guides with key concepts, important dates, and practice questions tailored to you.</p>
-          </div>
-        </div>
-      </section>
+      
+<section className="features-section">
+  <h2 className="section-title">Smarter ways to review, all in one place</h2>
+  <p className="section-subtitle">Upload your material once, and get clean summaries, highlighted key concepts, flashcards, quizzes, and a chat tutor that sticks to your content.</p>
+
+  <div className="features-grid">
+    <div className="feature-card">
+      <div className="feature-icon">SUM</div>
+      <h3>Clear summaries</h3>
+      <p>Distilled topic overviews that surface key ideas without the noise.</p>
+    </div>
+
+    <div className="feature-card">
+      <div className="feature-icon">KEY</div>
+      <h3>Keyword highlights</h3>
+      <p>Instant key takeaways for quick revision and class recaps.</p>
+    </div>
+
+    <div className="feature-card">
+      <div className="feature-icon">CARD</div>
+      <h3>Flashcards</h3>
+      <p>Active recall practice generated from your notes to lock it in.</p>
+    </div>
+
+    <div className="feature-card">
+      <div className="feature-icon">QUIZ</div>
+      <h3>Exam quizzes</h3>
+      <p>Self-testing with targeted questions so you know what sticks.</p>
+    </div>
+
+    <div className="feature-card">
+      <div className="feature-icon">CHAT</div>
+      <h3>AI chat tutor</h3>
+      <p>Ask questions and get answers grounded in your uploaded content.</p>
+    </div>
+
+    <div className="feature-card">
+      <div className="feature-icon">SYNC</div>
+      <h3>Topic overviews</h3>
+      <p>Organized breakdowns by concept so you can study by theme.</p>
+    </div>
+  </div>
+</section>
 
       {/* How It Works Section */}
       <section className="how-it-works">

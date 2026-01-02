@@ -11,20 +11,25 @@
   margin: 0 auto 80px;
 }
 
+
 /* Features Section */
 .features-section {
-  padding: 80px 20px;
+  padding: 96px 36px;
   text-align: center;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 30px;
-  margin: 60px auto;
+  background: radial-gradient(circle at top, rgba(164, 219, 255, 0.2), transparent 60%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.04));
+  border-radius: 36px;
+  margin: 90px auto;
   max-width: 1200px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
 
 .section-title {
-  font-size: 2.8rem;
-  margin-bottom: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-size: 3.2rem;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #dce9ff 0%, #8cd7ff 40%, #b8b5ff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -32,52 +37,67 @@
 
 .section-subtitle {
   font-size: 1.2rem;
-  margin-bottom: 50px;
-  opacity: 0.8;
-  max-width: 600px;
+  margin-bottom: 54px;
+  color: rgba(240, 246, 255, 0.85);
+  max-width: 680px;
   margin-left: auto;
   margin-right: auto;
 }
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
-  margin-top: 50px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 26px;
+  margin-top: 40px;
 }
 
 .feature-card {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 30px;
-  transition: transform 0.3s, background 0.3s;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.06));
+  border-radius: 24px;
+  padding: 32px;
+  transition: transform 0.3s, background 0.3s, border-color 0.3s, box-shadow 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-align: left;
+  min-height: 220px;
 }
 
 .feature-card:hover {
   transform: translateY(-10px);
-  background: rgba(255, 255, 255, 0.12);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.1));
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
 .feature-icon {
-  font-size: 3rem;
-  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(135deg, rgba(124, 200, 255, 0.9), rgba(187, 170, 255, 0.8));
+  margin-bottom: 18px;
 }
 
 .feature-card h3 {
-  font-size: 1.5rem;
-  margin-bottom: 15px;
-  color: white;
+  font-size: 1.4rem;
+  margin-bottom: 12px;
+  color: #f5f8ff;
 }
 
 .feature-card p {
-  opacity: 0.8;
+  color: rgba(234, 241, 255, 0.82);
   line-height: 1.6;
+  font-size: 1rem;
 }
 
 /* How It Works Section */
 .how-it-works {
-  padding: 80px 20px;
+  padding: 90px 24px;
   text-align: center;
   max-width: 1200px;
   margin: 0 auto;
@@ -98,10 +118,10 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(102, 126, 234, 0.5) 25%, 
-    rgba(102, 126, 234, 0.5) 75%, 
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(140, 215, 255, 0.55) 25%,
+    rgba(184, 181, 255, 0.55) 75%,
     transparent 100%
   );
   z-index: 1;
@@ -110,15 +130,18 @@
 .step {
   position: relative;
   z-index: 2;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 25px;
-  border-radius: 15px;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06));
+  padding: 28px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
 }
 
+/* circles above feature slides */
 .step-number {
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #8cd7ff 0%, #b8b5ff 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -126,6 +149,7 @@
   font-size: 1.3rem;
   font-weight: bold;
   margin: 0 auto 20px;
+  color: #172036;
 }
 
 .step h3 {
@@ -135,7 +159,7 @@
 }
 
 .step p {
-  opacity: 0.8;
+  color: rgba(235, 243, 255, 0.86);
   font-size: 0.95rem;
   line-height: 1.5;
 }
@@ -144,16 +168,20 @@
 .final-cta {
   text-align: center;
   padding: 80px 20px;
-  background: rgba(255, 255, 255, 0.03);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05));
   border-radius: 30px;
   margin: 60px auto;
   max-width: 800px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
 }
 
+
+/* lower final card */
 .final-cta h2 {
   font-size: 2.5rem;
   margin-bottom: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f8fbff 0%, #9edbff 50%, #bdb8ff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -162,7 +190,7 @@
 .final-cta p {
   font-size: 1.1rem;
   margin-bottom: 40px;
-  opacity: 0.8;
+  color: rgba(236, 244, 255, 0.85);
   max-width: 500px;
   margin-left: auto;
   margin-right: auto;
