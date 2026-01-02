@@ -1,8 +1,13 @@
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom'
 import LandingPage from './LandingPage'
 import AuthPage from './AuthPage'
 import SummarizerPage from './SummarizerPage'
 import './App.css'
+
+function RequireAuth({ children }) {
+  const token = localStorage.getItem('auth_token')
+  return token ? children : <Navigate to="/auth" replace />
+}
 
 function App() {
   return (
@@ -20,7 +25,14 @@ function App() {
 
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/summarizer" element={<SummarizerPage />} />
+        <Route
+          path="/summarizer"
+          element={(
+            <RequireAuth>
+              <SummarizerPage />
+            </RequireAuth>
+          )}
+        />
         <Route path="/auth" element={<AuthPage />} />
       </Routes>
     </BrowserRouter>

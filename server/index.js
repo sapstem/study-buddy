@@ -3,12 +3,15 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { OAuth2Client } from 'google-auth-library'
 
 dotenv.config()
 
 const app = express()
 const port = process.env.PORT || 5175
 const jwtSecret = process.env.JWT_SECRET || 'dev-secret-change-me'
+const googleClientId = process.env.GOOGLE_CLIENT_ID
+const googleClient = googleClientId ? new OAuth2Client(googleClientId) : null
 
 app.use(cors({
   origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
@@ -63,22 +66,47 @@ app.post('/api/auth/signin', async (req, res) => {
   res.json({ token, user: { email: user.email } })
 })
 
-// Placeholder: expects { email, googleId } until OAuth is wired up.
-app.post('/api/auth/google', (req, res) => {
-  const { email, googleId } = req.body || {}
+app.post('/api/auth/google', async (req, res) => {
+  const { credential } = req.body || {}
 
-  if (!email || !googleId) {
-    return res.status(400).json({ error: 'Email and Google ID are required.' })
+  if (!googleClient) {
+    return res.status(500).json({ error: 'Google auth is not configured.' })
   }
 
-  let user = users.get(email)
-  if (!user) {
-    user = { id: googleId, email, provider: 'google' }
-    users.set(email, user)
+  if (!credential) {
+    return res.status(400).json({ error: 'Google credential is required.' })
   }
 
-  const token = issueToken(user)
-  res.json({ token, user: { email: user.email } })
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: googleClientId
+    })
+
+    const payload = ticket.getPayload() || {}
+    const email = payload.email
+    const googleId = payload.sub
+
+    if (!email || !googleId) {
+      return res.status(400).json({ error: 'Google account is missing email.' })
+    }
+
+    let user = users.get(email)
+    if (user && user.provider == 'local') {
+      return res.status(409).json({ error: 'Email already registered with password.' })
+    }
+
+    if (!user) {
+      user = { id: googleId, email, provider: 'google' }
+      users.set(email, user)
+    }
+
+    const token = issueToken(user)
+    res.json({ token, user: { email: user.email } })
+  } catch (error) {
+    console.error('Google auth error:', error)
+    res.status(401).json({ error: 'Invalid Google credential.' })
+  }
 })
 
 app.listen(port, () => {
