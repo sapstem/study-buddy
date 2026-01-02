@@ -53,7 +53,7 @@ function LandingPage() {
         </p>
         
         <div className="cta-group">
-          <button className="cta-primary" onClick={() => navigate('/summarizer')}>
+          <button className="cta-primary" onClick={() => navigate('/auth')}>
             Start Learning
           </button>
         </div>
@@ -125,7 +125,7 @@ function LandingPage() {
       <section className="final-cta">
         <h2>Ready to Transform Your Study Habits?</h2>
         <p>Join students who are already learning smarter with AI</p>
-        <button className="cta-primary" onClick={() => navigate('/summarizer')}>
+        <button className="cta-primary" onClick={() => navigate('/auth')}>
           Start Learning Now
         </button>
       </section>
