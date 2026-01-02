@@ -142,6 +142,22 @@ function LandingPage() {
           Start Learning Now
         </button>
       </section>
+
+      <footer className="site-footer">
+        <div className="footer-brand">
+          <h3>Sage</h3>
+          <p>AI-powered study support built for clarity, speed, and confidence.</p>
+        </div>
+        <div className="footer-links">
+          <a href="#">Blogs</a>
+          <a href="#">Terms & Conditions</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Contact Us</a>
+        </div>
+        <div className="footer-bottom">
+          <span>© 2026 Sage. All rights reserved.</span>
+        </div>
+      </footer>
     </div>
   )
 }
