@@ -196,6 +196,74 @@
   margin-right: auto;
 }
 
+/* FAQ Section */
+.faq-section {
+  max-width: 1100px;
+  margin: 140px auto 80px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.faq-section h2 {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  color: #f7f8ff;
+}
+
+.faq-subtitle {
+  color: rgba(220, 230, 255, 0.7);
+  margin-bottom: 40px;
+  font-size: 1.15rem;
+}
+
+.faq-list {
+  display: grid;
+  gap: 18px;
+  text-align: left;
+}
+
+.faq-item {
+  border-radius: 22px;
+  background: rgba(10, 12, 20, 0.40);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+
+.faq-item summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 20px 24px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: rgba(245, 248, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: "+";
+  font-size: 1.4rem;
+  color: rgba(200, 216, 255, 0.8);
+}
+
+.faq-item[open] summary::after {
+  content: "-";
+}
+
+.faq-item p {
+  padding: 0 24px 20px;
+  color: rgba(220, 232, 255, 0.8);
+  line-height: 1.6;
+}
+
 /* Footer */
 .site-footer {
   margin: 20px auto 8px;
@@ -279,6 +347,14 @@
   
   .final-cta h2 {
     font-size: 2rem;
+  }
+
+  .faq-section {
+    margin: 100px auto 60px;
+  }
+
+  .faq-section h2 {
+    font-size: 2.2rem;
   }
 
   .site-footer {

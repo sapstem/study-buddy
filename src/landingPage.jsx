@@ -143,6 +143,34 @@ function LandingPage() {
         </button>
       </section>
 
+      {/* FAQ Section */}
+      <section className="faq-section">
+        <h2>Frequently Asked Questions</h2>
+        <p className="faq-subtitle">Everything you need to know about Sage</p>
+
+        <div className="faq-list">
+          <details className="faq-item">
+            <summary>Can I turn lecture notes into summaries and study guides?</summary>
+            <p>Yes. Paste your notes and Sage will generate concise summaries and topic overviews.</p>
+          </details>
+
+          <details className="faq-item">
+            <summary>Does Sage support flashcards and quizzes?</summary>
+            <p>Absolutely. You can create flashcards for recall and quizzes for self-testing.</p>
+          </details>
+
+          <details className="faq-item">
+            <summary>Can Sage answer questions about my uploaded content?</summary>
+            <p>Yes. The AI tutor is designed to respond based on your notes and materials.</p>
+          </details>
+
+          <details className="faq-item">
+            <summary>Is Sage free to use?</summary>
+            <p>Yes. You can start for free and upgrade later if you want more features.</p>
+          </details>
+        </div>
+      </section>
+
       <footer className="site-footer">
         <div className="footer-brand">
           <h3>Sage</h3>
