@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import LandingPage from './LandingPage'
+import AuthPage from './AuthPage'
 import SummarizerPage from './SummarizerPage'
 import './App.css'
 
@@ -12,7 +13,7 @@ function App() {
 
       <nav className="nav">
         <Link to="/" className="logo">Sage</Link>
-        <Link to="/summarizer">
+        <Link to="/auth">
           <button className="nav-cta">Get Started</button>
         </Link>
       </nav>
@@ -20,6 +21,7 @@ function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/summarizer" element={<SummarizerPage />} />
+        <Route path="/auth" element={<AuthPage />} />
       </Routes>
     </BrowserRouter>
   )
