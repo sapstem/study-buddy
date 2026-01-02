@@ -39,19 +39,23 @@
 
 .auth-google {
   width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.auth-google iframe {
+  width: 100% !important;
+}
+
+.auth-google-fallback {
+  width: 100%;
   border: none;
   border-radius: 14px;
   padding: 16px 20px;
   font-weight: 600;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.3);
   color: #1a1a1a;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.auth-google:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(255, 255, 255, 0.25);
+  margin-top: 12px;
 }
 
 .auth-divider {
@@ -113,6 +117,17 @@
 .auth-submit:hover {
   background: rgba(255, 255, 255, 0.25);
   transform: translateY(-1px);
+}
+
+.auth-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.auth-status {
+  margin-top: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
 }
 
 .auth-footer {
