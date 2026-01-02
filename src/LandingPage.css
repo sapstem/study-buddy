@@ -1,3 +1,16 @@
+/* Page layout */
+.landing-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 24px 120px;
+  text-align: center;
+}
+
+.hero-section {
+  max-width: 900px;
+  margin: 0 auto 80px;
+}
+
 /* Features Section */
 .features-section {
   padding: 80px 20px;
