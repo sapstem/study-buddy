@@ -349,6 +349,75 @@ button.action-btn:disabled {
   display: none;
 }
 
+/* features section */
+.features-section {
+  max-width: 1200px;
+  margin: 100px auto 80px;
+  padding: 0 40px;
+  text-align: center;
+}
+
+.features-section h2 {
+  color: #a0a8ff;
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  letter-spacing: -0.02em;
+}
+
+.features-section .features-subtitle {
+  color: #d1d1d1;
+  font-size: 1.3rem;
+  margin-bottom: 60px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin: 0 auto;
+  max-width: 1000px;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  padding: 40px 30px;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.feature-card:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+}
+
+.feature-card .icon {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.feature-card h3 {
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.feature-card p {
+  color: #d1d1d1;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.nav a {
+  text-decoration: none;
+  color: inherit;
+}
+
 @media (max-width: 768px) {
   h1 {
     font-size: 3rem;
