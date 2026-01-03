@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom'
 import LandingPage from './LandingPage'
 import AuthPage from './AuthPage'
 import SummarizerPage from './SummarizerPage'
@@ -9,19 +9,26 @@ function RequireAuth({ children }) {
   return token ? children : <Navigate to="/auth" replace />
 }
 
-function App() {
-  return (
-    <BrowserRouter>
-      <video autoPlay loop muted playsInline className="video-background">
-        <source src="/background.mp4" type="video/mp4" />
-      </video>
+function AppFrame() {
+  const location = useLocation()
+  const isSummarizer = location.pathname.startsWith('/summarizer')
 
-      <nav className="nav">
-        <Link to="/" className="logo">Sage</Link>
-        <Link to="/auth">
-          <button className="nav-cta">Get Started</button>
-        </Link>
-      </nav>
+  return (
+    <>
+      {!isSummarizer && (
+        <>
+          <video autoPlay loop muted playsInline className="video-background">
+            <source src="/background.mp4" type="video/mp4" />
+          </video>
+
+          <nav className="nav">
+            <Link to="/" className="logo">Sage</Link>
+            <Link to="/auth">
+              <button className="nav-cta">Get Started</button>
+            </Link>
+          </nav>
+        </>
+      )}
 
       <Routes>
         <Route path="/" element={<LandingPage />} />
@@ -35,6 +42,14 @@ function App() {
         />
         <Route path="/auth" element={<AuthPage />} />
       </Routes>
+    </>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppFrame />
     </BrowserRouter>
   )
 }
