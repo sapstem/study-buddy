@@ -41,6 +41,8 @@ function SummarizerPage() {
   const [savedSummaries, setSavedSummaries] = useState([])
   const [loading, setLoading] = useState(false)
   const [userEmail, setUserEmail] = useState(null)
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light')
+  const [accountOpen, setAccountOpen] = useState(false)
 
   useEffect(() => {
     setUserEmail(getCurrentUserEmail())
@@ -56,6 +58,10 @@ function SummarizerPage() {
     const key = getStorageKey(userEmail)
     localStorage.setItem(key, JSON.stringify(savedSummaries))
   }, [savedSummaries, userEmail])
+
+  useEffect(() => {
+    localStorage.setItem('theme', theme)
+  }, [theme])
 
   const handleSummarize = async () => {
     if (!noteText.trim()) {
@@ -125,121 +131,180 @@ ${noteText}`
     navigate('/auth')
   }
 
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))
+  }
+
   return (
-    <div className="app-section">
-      <div className="session-bar">
-        <div className="session-info">
-          <span className="session-label">Signed in as</span>
-          <strong>{userEmail || 'Guest'}</strong>
-        </div>
-        <div className="session-actions">
-          <button type="button" className="ghost-btn" onClick={handleClearSummaries}>
-            Clear summaries
-          </button>
-          <button type="button" className="ghost-btn" onClick={handleSignOut}>
-            Sign out
-          </button>
-        </div>
-      </div>
-
-      <div className="input-section">
-        <textarea
-          value={noteText}
-          onChange={(e) => setNoteText(e.target.value)}
-          placeholder="Paste your lecture notes, study materials, or any text you want summarized..."
-          rows="10"
-        />
-
-        <button
-          className="action-btn"
-          onClick={handleSummarize}
-          disabled={loading}
-        >
-          {loading ? (
-            <>
-              <span>AI</span>
-              <span>Analyzing with AI...</span>
-            </>
-          ) : (
-            <>
-              <span>{'->'}</span>
-              <span>Generate Summary</span>
-            </>
-          )}
-        </button>
-      </div>
-
-      {(summary || highlights.takeaways.length > 0 || highlights.keywords.length > 0) && (
-        <div className="summary">
-          <div className="summary-header">
-            <h3>
-              <span>*</span>
-              <span>AI Overview</span>
-            </h3>
-            <span className="summary-sub">Topic overview, takeaways, keywords</span>
+    <div className="workspace-shell" data-theme={theme}>
+      <div className="workspace-layout">
+        <aside className="workspace-rail">
+          <div className="workspace-brand">Sage</div>
+          <div className="workspace-nav">
+            <button type="button" className="rail-link">New summary</button>
+            <button type="button" className="rail-link">History</button>
+            <button type="button" className="rail-link">Saved</button>
           </div>
 
-          {summary && (
-            <p className="summary-overview">{summary}</p>
-          )}
-
-          <div className="summary-grid">
-            {highlights.takeaways.length > 0 && (
-              <div className="summary-card">
-                <h4>Key takeaways</h4>
-                <ul>
-                  {highlights.takeaways.map((item, idx) => (
-                    <li key={idx}>{item}</li>
-                  ))}
-                </ul>
+          <div className="workspace-account">
+            <button
+              type="button"
+              className="account-trigger"
+              onClick={() => setAccountOpen(!accountOpen)}
+            >
+              <div className="account-avatar">{(userEmail || 'U').slice(0, 1).toUpperCase()}</div>
+              <div className="account-meta">
+                <span className="account-label">Account</span>
+                <strong>{userEmail || 'Guest'}</strong>
               </div>
-            )}
+              <span className="chevron">{accountOpen ? '▴' : '▾'}</span>
+            </button>
 
-            {highlights.keywords.length > 0 && (
-              <div className="summary-card">
-                <h4>Keywords</h4>
-                <div className="keywords">
-                  {highlights.keywords.map((word, idx) => (
-                    <span key={idx} className="keyword-chip">{word}</span>
-                  ))}
+            {accountOpen && (
+              <div className="account-menu">
+                <button type="button" className="menu-item" onClick={handleClearSummaries}>
+                  Clear summaries
+                </button>
+                <button type="button" className="menu-item">
+                  Settings
+                </button>
+                <div className="menu-divider" />
+                <div className="menu-item theme-row">
+                  <span>Dark mode</span>
+                  <button
+                    type="button"
+                    className={`theme-toggle ${theme === 'dark' ? 'on' : 'off'}`}
+                    onClick={toggleTheme}
+                    aria-label="Toggle theme"
+                  >
+                    <span className="thumb" />
+                  </button>
                 </div>
+                <div className="menu-divider" />
+                <button type="button" className="menu-item danger" onClick={handleSignOut}>
+                  Log out
+                </button>
               </div>
             )}
           </div>
-        </div>
-      )}
+        </aside>
 
-      <div className="saved-summaries">
-        <h2>
-          <span>*</span>
-          <span>Your Summaries</span>
-        </h2>
-        {savedSummaries.length === 0 ? (
-          <p className="no-summaries">
-            No saved summaries yet. Create your first AI summary above!
-          </p>
-        ) : (
-          savedSummaries.map(item => (
-            <div key={item.id} className="saved-summary-item">
-              <small>* {item.date}</small>
-              <p><strong>Original Notes:</strong> {item.text.substring(0, 150)}{item.text.length > 150 ? '...' : ''}</p>
-              <p><strong>AI Overview:</strong> {item.summary}</p>
-              {item.takeaways?.length > 0 && (
-                <div className="saved-takeaways">
-                  <strong>Takeaways:</strong>
-                  <ul>
-                    {item.takeaways.map((take, idx) => (
-                      <li key={idx}>{take}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {item.keywords?.length > 0 && (
-                <p><strong>Keywords:</strong> {item.keywords.join(', ')}</p>
-              )}
+        <main className="workspace-main">
+          <div className="session-bar">
+            <div className="session-info">
+              <span className="session-label">Signed in as</span>
+              <strong>{userEmail || 'Guest'}</strong>
             </div>
-          ))
-        )}
+            <div className="session-actions">
+              <button type="button" className="ghost-btn" onClick={handleClearSummaries}>
+                Clear summaries
+              </button>
+              <button type="button" className="ghost-btn" onClick={handleSignOut}>
+                Sign out
+              </button>
+            </div>
+          </div>
+
+          <div className="input-section">
+            <textarea
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              placeholder="Paste your lecture notes, study materials, or any text you want summarized..."
+              rows="10"
+            />
+
+            <button
+              className="action-btn"
+              onClick={handleSummarize}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span>AI</span>
+                  <span>Analyzing with AI...</span>
+                </>
+              ) : (
+                <>
+                  <span>{'->'}</span>
+                  <span>Generate Summary</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {(summary || highlights.takeaways.length > 0 || highlights.keywords.length > 0) && (
+            <div className="summary">
+              <div className="summary-header">
+                <h3>
+                  <span>*</span>
+                  <span>AI Overview</span>
+                </h3>
+                <span className="summary-sub">Topic overview, takeaways, keywords</span>
+              </div>
+
+              {summary && (
+                <p className="summary-overview">{summary}</p>
+              )}
+
+              <div className="summary-grid">
+                {highlights.takeaways.length > 0 && (
+                  <div className="summary-card">
+                    <h4>Key takeaways</h4>
+                    <ul>
+                      {highlights.takeaways.map((item, idx) => (
+                        <li key={idx}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {highlights.keywords.length > 0 && (
+                  <div className="summary-card">
+                    <h4>Keywords</h4>
+                    <div className="keywords">
+                      {highlights.keywords.map((word, idx) => (
+                        <span key={idx} className="keyword-chip">{word}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="saved-summaries">
+            <h2>
+              <span>*</span>
+              <span>Your Summaries</span>
+            </h2>
+            {savedSummaries.length === 0 ? (
+              <p className="no-summaries">
+                No saved summaries yet. Create your first AI summary above!
+              </p>
+            ) : (
+              savedSummaries.map(item => (
+                <div key={item.id} className="saved-summary-item">
+                  <small>* {item.date}</small>
+                  <p><strong>Original Notes:</strong> {item.text.substring(0, 150)}{item.text.length > 150 ? '...' : ''}</p>
+                  <p><strong>AI Overview:</strong> {item.summary}</p>
+                  {item.takeaways?.length > 0 && (
+                    <div className="saved-takeaways">
+                      <strong>Takeaways:</strong>
+                      <ul>
+                        {item.takeaways.map((take, idx) => (
+                          <li key={idx}>{take}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {item.keywords?.length > 0 && (
+                    <p><strong>Keywords:</strong> {item.keywords.join(', ')}</p>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </main>
       </div>
     </div>
   )
