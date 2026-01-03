@@ -521,6 +521,8 @@ button.action-btn:disabled {
   grid-template-columns: 260px 1fr;
   gap: 22px;
   position: relative;
+  height: calc(100vh - 72px);
+  overflow: hidden;
 }
 
 .workspace-rail {
@@ -531,7 +533,9 @@ button.action-btn:disabled {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: calc(100vh - 72px);
+  min-height: auto;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .workspace-brand {
@@ -768,6 +772,8 @@ button.action-btn:disabled {
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 24px;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .workspace-main * {
