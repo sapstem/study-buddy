@@ -280,6 +280,63 @@ button.action-btn:disabled {
   font-size: 16px;
 }
 
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.summary-sub {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+}
+
+.summary-overview {
+  margin-bottom: 18px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.summary-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.summary-card h4 {
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.summary-card ul {
+  padding-left: 18px;
+  color: #d1d1d1;
+  line-height: 1.6;
+}
+
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.keyword-chip {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 6px 10px;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
 .saved-summaries {
   margin-top: 60px;
 }
@@ -331,6 +388,12 @@ button.action-btn:disabled {
 .saved-summary-item strong {
   color: #ffffff;
   font-weight: 700;
+}
+
+.saved-takeaways ul {
+  padding-left: 18px;
+  color: #d1d1d1;
+  line-height: 1.5;
 }
 
 .no-summaries {
@@ -416,6 +479,44 @@ button.action-btn:disabled {
 .nav a {
   text-decoration: none;
   color: inherit;
+}
+
+.session-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  margin-bottom: 18px;
+  color: #ffffff;
+}
+
+.session-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.95rem;
+  margin-right: 6px;
+}
+
+.session-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.ghost-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ghost-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 768px) {
