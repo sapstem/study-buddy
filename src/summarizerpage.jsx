@@ -5,25 +5,54 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
 const genAI = new GoogleGenerativeAI(API_KEY)
 
+const getStorageKey = (email) => (email ? `summaries:${email}` : 'summaries:anon')
+
+const base64UrlToBase64 = (input) => {
+  // JWT payload is base64url; normalize and pad for atob
+  let output = input.replace(/-/g, '+').replace(/_/g, '/')
+  while (output.length % 4 !== 0) {
+    output += '='
+  }
+  return output
+}
+
+const getCurrentUserEmail = () => {
+  const token = localStorage.getItem('auth_token')
+  if (!token) return null
+
+  try {
+    const parts = token.split('.')
+    if (parts.length < 2) return null
+
+    const payload = JSON.parse(atob(base64UrlToBase64(parts[1])))
+    return payload?.email || null
+  } catch (error) {
+    console.warn('Failed to parse auth token', error)
+    return null
+  }
+}
+
 function SummarizerPage() {
   const [noteText, setNoteText] = useState('')
   const [summary, setSummary] = useState('')
   const [savedSummaries, setSavedSummaries] = useState([])
   const [loading, setLoading] = useState(false)
+  const [userEmail, setUserEmail] = useState(null)
 
-  // localstorage effects
   useEffect(() => {
-    const saved = localStorage.getItem('summaries')
-    if (saved) {
-      setSavedSummaries(JSON.parse(saved))
-    }
+    setUserEmail(getCurrentUserEmail())
   }, [])
 
   useEffect(() => {
-    if (savedSummaries.length > 0) {
-      localStorage.setItem('summaries', JSON.stringify(savedSummaries))
-    }
-  }, [savedSummaries])
+    const key = getStorageKey(userEmail)
+    const saved = localStorage.getItem(key)
+    setSavedSummaries(saved ? JSON.parse(saved) : [])
+  }, [userEmail])
+
+  useEffect(() => {
+    const key = getStorageKey(userEmail)
+    localStorage.setItem(key, JSON.stringify(savedSummaries))
+  }, [savedSummaries, userEmail])
 
   const handleSummarize = async () => {
     if (!noteText.trim()) {
