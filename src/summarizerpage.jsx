@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import RecordModal from './RecordModal'
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
 const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null
@@ -45,6 +46,7 @@ function SummarizerPage() {
   const [overview, setOverview] = useState('')
   const [takeaways, setTakeaways] = useState([])
   const [keywords, setKeywords] = useState([])
+  const [showRecordModal, setShowRecordModal] = useState(false)
 
   useEffect(() => {
     const name = getDisplayName()
@@ -165,7 +167,7 @@ ${noteText}`
                   <p className="sub">Copied Text</p>
                 </div>
               </div>
-              <div className="action-tile">
+              <div className="action-tile" onClick={() => setShowRecordModal(true)}>
                 <div className="icon">🎙</div>
                 <div>
                   <p className="title">Record</p>
@@ -226,6 +228,11 @@ ${noteText}`
           </div>
         </main>
       </div>
+
+      <RecordModal 
+        isOpen={showRecordModal} 
+        onClose={() => setShowRecordModal(false)} 
+      />
     </div>
   )
 }
