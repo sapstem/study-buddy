@@ -1,0 +1,402 @@
+/* Layout Container */
+.studio-shell {
+  display: flex;
+  min-height: 100vh;
+  background: #fafafa;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* Left Sidebar */
+.studio-rail {
+  width: 280px;
+  background: white;
+  border-right: 1px solid #e5e5e5;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 16px;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* Logo Section */
+.studio-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 0 8px;
+}
+
+.logo-mark {
+  width: 32px;
+  height: 32px;
+  background: #1a1a1a;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.logo-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* Sidebar Sections */
+.studio-section {
+  margin-bottom: 24px;
+}
+
+.studio-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #999;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  padding: 0 12px;
+}
+
+/* Sidebar Links */
+.studio-link {
+  width: 100%;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.studio-link:hover {
+  background: #f5f5f5;
+  color: #1a1a1a;
+}
+
+.studio-link.active {
+  background: #f0f0f0;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+/* Main Content */
+.studio-main {
+  margin-left: 280px;
+  flex: 1;
+  padding: 40px 60px;
+  max-width: 1400px;
+}
+
+/* Hero Section */
+.studio-hero {
+  max-width: 900px;
+  margin: 0 auto 60px;
+}
+
+.studio-hero h1 {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* Action Cards */
+.action-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.action-tile {
+  background: white;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 24px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-tile:hover {
+  border-color: #d0d0d0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
+}
+
+.action-tile .icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.action-tile .title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.action-tile .sub {
+  font-size: 13px;
+  color: #999;
+}
+
+/* Prompt Bar */
+.prompt-bar {
+  position: relative;
+  background: white;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 16px 60px 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.prompt-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  color: #1a1a1a;
+  background: transparent;
+}
+
+.prompt-bar input::placeholder {
+  color: #999;
+}
+
+.prompt-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #666;
+}
+
+.send-btn {
+  position: absolute;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.send-btn:hover:not(:disabled) {
+  background: #333;
+}
+
+.send-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Summary Output */
+.summary-output {
+  background: white;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 24px;
+}
+
+.summary-overview {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.summary-heading {
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.summary-output ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.summary-output li {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 8px;
+  padding-left: 20px;
+  position: relative;
+}
+
+.summary-output li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #999;
+}
+
+.keyword-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  background: #f5f5f5;
+  border: 1px solid #e5e5e5;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  color: #333;
+}
+
+/* Spaces Area */
+.spaces-area {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.spaces-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.spaces-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.spaces-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.space-card {
+  background: white;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 120px;
+}
+
+.space-card:hover {
+  border-color: #d0d0d0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.space-card.dashed {
+  border: 2px dashed #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: #ccc;
+}
+
+.space-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.space-sub {
+  font-size: 12px;
+  color: #999;
+}
+
+/* Utility */
+.muted {
+  color: #999;
+  font-size: 13px;
+}
+
+/* User Profile at Bottom */
+.studio-rail .user-profile {
+  margin-top: auto;
+  padding: 12px;
+  border-top: 1px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e5e5e5;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+/* Upgrade Button */
+.upgrade-btn {
+  position: absolute;
+  top: 24px;
+  right: 40px;
+  padding: 10px 20px;
+  background: white;
+  border: 1px solid #22c55e;
+  border-radius: 8px;
+  color: #22c55e;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.upgrade-btn:hover {
+  background: #f0fdf4;
+}
+
+@media (max-width: 1024px) {
+  .action-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .studio-main {
+    padding: 20px 30px;
+  }
+}

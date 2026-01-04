@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import RecordModal from './RecordModal'
+import './SummarizerPage.css'
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
 const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null
@@ -104,130 +105,155 @@ ${noteText}`
 
   return (
     <div className="studio-shell">
-      <div className="studio-layout">
-        <aside className="studio-rail">
-          <div className="studio-header">
-            <div className="logo-mark">S</div>
-            <span className="logo-name">Sage</span>
+      <aside className="studio-rail">
+        {/* Logo */}
+        <div className="studio-header">
+          <div className="logo-mark">S</div>
+          <span className="logo-name">Sage</span>
+        </div>
+
+        {/* Main Actions */}
+        <div className="studio-section">
+          <button className="studio-link active">+ Add content</button>
+          <button className="studio-link">🔍 Search</button>
+          <button className="studio-link">🕐 History</button>
+        </div>
+
+        {/* Spaces */}
+        <div className="studio-section">
+          <p className="studio-label">Spaces</p>
+          <button className="studio-link">+ Create Space</button>
+          <button className="studio-link active">{displayName}'s Space</button>
+        </div>
+
+        {/* Recents */}
+        <div className="studio-section">
+          <p className="studio-label">Recents</p>
+          {savedSummaries.slice(0, 4).map((item) => (
+            <button
+              key={item.id}
+              className="studio-link"
+              onClick={() => {
+                setOverview(item.summary || '')
+                setTakeaways(item.takeaways || [])
+                setKeywords(item.keywords || [])
+                setNoteText(item.text)
+              }}
+            >
+              ≡ {item.text.slice(0, 25) || 'Summary'}...
+            </button>
+          ))}
+        </div>
+
+        {/* User Profile at Bottom */}
+        <div className="user-profile">
+          <div className="user-avatar"></div>
+          <span className="user-name">{displayName}</span>
+        </div>
+      </aside>
+
+      <main className="studio-main">
+        <div className="studio-hero">
+          <h1>Hey {displayName}, ready to learn?</h1>
+          
+          {/* Action Cards */}
+          <div className="action-row">
+            <div className="action-tile">
+              <div className="icon">↑</div>
+              <div>
+                <p className="title">Upload</p>
+                <p className="sub">File, audio, video</p>
+              </div>
+            </div>
+            
+            <div className="action-tile">
+              <div className="icon">🔗</div>
+              <div>
+                <p className="title">Link</p>
+                <p className="sub">YouTube, Website</p>
+              </div>
+            </div>
+            
+            <div className="action-tile">
+              <div className="icon">📋</div>
+              <div>
+                <p className="title">Paste</p>
+                <p className="sub">Copied Text</p>
+              </div>
+            </div>
+            
+            <div className="action-tile" onClick={() => setShowRecordModal(true)}>
+              <div className="icon">🎙</div>
+              <div>
+                <p className="title">Record</p>
+                <p className="sub">Record Lecture</p>
+              </div>
+            </div>
           </div>
 
-          <div className="studio-section">
-            <button className="studio-link active">＋ Add content</button>
-            <button className="studio-link">🔍 Search</button>
-            <button className="studio-link">⏱ History</button>
+          {/* Prompt Bar */}
+          <div className="prompt-bar">
+            <input
+              type="text"
+              placeholder="Learn anything"
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && runSummarize()}
+            />
+            <div className="prompt-controls">
+              <span>Auto ▾</span>
+              <span>@ Add Context</span>
+            </div>
+            <button className="send-btn" onClick={runSummarize} disabled={loading}>
+              ↑
+            </button>
           </div>
 
-          <div className="studio-section">
-            <p className="studio-label">Spaces</p>
-            <button className="studio-link">＋ Create Space</button>
-            <button className="studio-link active">◻ My Space</button>
-          </div>
+          {status && <p className="muted">{status}</p>}
 
-          <div className="studio-section">
-            <p className="studio-label">Recents</p>
-            {savedSummaries.slice(0, 4).map((item) => (
-              <button
-                key={item.id}
-                className="studio-link"
-                onClick={() => {
-                  setOverview(item.summary || '')
-                  setTakeaways(item.takeaways || [])
-                  setKeywords(item.keywords || [])
-                  setNoteText(item.text)
-                }}
-              >
-                {item.text.slice(0, 28) || 'Summary'}
-              </button>
+          {/* Summary Output */}
+          {(overview || takeaways.length > 0 || keywords.length > 0) && (
+            <div className="summary-output">
+              {overview && <p className="summary-overview">{overview}</p>}
+              <div className="summary-grid">
+                {takeaways.length > 0 && (
+                  <div>
+                    <p className="summary-heading">Takeaways</p>
+                    <ul>
+                      {takeaways.map((t, i) => <li key={i}>{t}</li>)}
+                    </ul>
+                  </div>
+                )}
+                {keywords.length > 0 && (
+                  <div>
+                    <p className="summary-heading">Keywords</p>
+                    <div className="keyword-chips">
+                      {keywords.map((k, i) => <span key={i} className="chip">{k}</span>)}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Spaces Area */}
+        <div className="spaces-area">
+          <div className="spaces-header">
+            <h2>Spaces</h2>
+            <span className="muted">Newest ▾</span>
+          </div>
+          <div className="spaces-grid">
+            <div className="space-card dashed">+</div>
+            {savedSummaries.slice(0, 3).map((item) => (
+              <div key={item.id} className="space-card">
+                <p className="space-title">{item.text.slice(0, 50)}</p>
+                <p className="space-sub">{item.date}</p>
+              </div>
             ))}
           </div>
-        </aside>
-
-        <main className="studio-main">
-          <div className="studio-hero">
-            <h1>Hey {displayName}, ready to learn?</h1>
-            <div className="action-row">
-              <div className="action-tile">
-                <div className="icon">⭱</div>
-                <div>
-                  <p className="title">Upload</p>
-                  <p className="sub">File, audio, video</p>
-                </div>
-              </div>
-              <div className="action-tile">
-                <div className="icon">🔗</div>
-                <div>
-                  <p className="title">Link</p>
-                  <p className="sub">YouTube, Website</p>
-                </div>
-              </div>
-              <div className="action-tile">
-                <div className="icon">📋</div>
-                <div>
-                  <p className="title">Paste</p>
-                  <p className="sub">Copied Text</p>
-                </div>
-              </div>
-              <div className="action-tile" onClick={() => setShowRecordModal(true)}>
-                <div className="icon">🎙</div>
-                <div>
-                  <p className="title">Record</p>
-                  <p className="sub">Record Lecture</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="prompt-bar">
-              <input
-                type="text"
-                placeholder="Ask Sage or drop your notes..."
-                value={noteText}
-                onChange={(e) => setNoteText(e.target.value)}
-              />
-              <button className="send-btn" onClick={runSummarize} disabled={loading}>↑</button>
-            </div>
-            {status && <p className="muted">{status}</p>}
-            {(overview || takeaways.length > 0 || keywords.length > 0) && (
-              <div className="summary-output">
-                {overview && <p className="summary-overview">{overview}</p>}
-                <div className="summary-grid">
-                  {takeaways.length > 0 && (
-                    <div>
-                      <p className="summary-heading">Takeaways</p>
-                      <ul>
-                        {takeaways.map((t, i) => <li key={i}>{t}</li>)}
-                      </ul>
-                    </div>
-                  )}
-                  {keywords.length > 0 && (
-                    <div>
-                      <p className="summary-heading">Keywords</p>
-                      <div className="keyword-chips">
-                        {keywords.map((k, i) => <span key={i} className="chip">{k}</span>)}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="spaces-area">
-            <div className="spaces-header">
-              <h2>Spaces</h2>
-              <span className="muted">Newest ▾</span>
-            </div>
-            <div className="spaces-grid">
-              <div className="space-card dashed">＋</div>
-              {savedSummaries.slice(0, 3).map((item) => (
-                <div key={item.id} className="space-card">
-                  <p className="space-title">{item.text.slice(0, 40)}</p>
-                  <p className="space-sub">{item.date}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </main>
-      </div>
+        </div>
+      </main>
 
       <RecordModal 
         isOpen={showRecordModal} 
