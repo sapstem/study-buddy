@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import RecordModal from './RecordModal'
 import './SummarizerPage.css'
+import UploadModal from './UploadModal'
+import LinkModal from './LinkModal'
+import PasteModal from './PasteModal'
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
 const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null
@@ -18,22 +21,21 @@ const getDisplayName = () => {
   if (!token) return 'Guest'
   try {
     const payload = JSON.parse(atob(base64UrlToBase64(token.split('.')[1] || '')))
-    const email = payload?.email || ''
-    const name = email.split('@')[0] || 'Guest'
-    return name.replace(/[._-]+/g, ' ')
+    // Use actual Google account name
+    return payload?.name || payload?.given_name || 'Guest'
   } catch (e) {
     return 'Guest'
   }
 }
 
-const loadSummaries = (email) => {
-  const key = email ? `summaries:${email}` : 'summaries:anon'
+const loadSummaries = (name) => {
+  const key = name ? `summaries:${name}` : 'summaries:anon'
   const saved = localStorage.getItem(key)
   return saved ? JSON.parse(saved) : []
 }
 
-const saveSummaries = (email, items) => {
-  const key = email ? `summaries:${email}` : 'summaries:anon'
+const saveSummaries = (name, items) => {
+  const key = name ? `summaries:${name}` : 'summaries:anon'
   localStorage.setItem(key, JSON.stringify(items))
 }
 
@@ -48,6 +50,9 @@ function SummarizerPage() {
   const [takeaways, setTakeaways] = useState([])
   const [keywords, setKeywords] = useState([])
   const [showRecordModal, setShowRecordModal] = useState(false)
+  const [showUploadModal, setShowUploadModal] = useState(false)
+  const [showLinkModal, setShowLinkModal] = useState(false)
+  const [showPasteModal, setShowPasteModal] = useState(false)
 
   useEffect(() => {
     const name = getDisplayName()
@@ -82,6 +87,7 @@ ${noteText}`
       const response = await result.response
       const raw = response.text().replace(/```json|```/g, '').trim()
       const parsed = JSON.parse(raw)
+
       const newItem = {
         id: Date.now(),
         text: noteText.trim(),
@@ -90,11 +96,12 @@ ${noteText}`
         keywords: Array.isArray(parsed.keywords) ? parsed.keywords : [],
         date: new Date().toLocaleString()
       }
+
       setOverview(newItem.summary)
       setTakeaways(newItem.takeaways)
       setKeywords(newItem.keywords)
       setSavedSummaries([newItem, ...savedSummaries])
-      setNoteText('')
+      navigate(`/conversation/${newItem.id}`)
     } catch (error) {
       console.error(error)
       setStatus('Failed to summarize.')
@@ -103,30 +110,71 @@ ${noteText}`
     }
   }
 
+  // HANDLERS
+  const handleUpload = (content, filename) => {
+    setNoteText(content)
+    setStatus(`Loaded: ${filename}`)
+  }
+
+  const handleLink = async (url) => {
+    setLoading(true)
+    setStatus('Fetching content from URL...')
+    
+    try {
+      // Use Jina AI Reader to convert URL to markdown
+      const jinaUrl = `https://r.jina.ai/${url}`
+      const response = await fetch(jinaUrl)
+      const markdown = await response.text()
+      
+      if (markdown && markdown.length > 50) {
+        setNoteText(markdown)
+        setStatus(`Loaded content from: ${url}`)
+      } else {
+        throw new Error('No content found')
+      }
+    } catch (error) {
+      console.error('Failed to fetch URL:', error)
+      setStatus('Failed to fetch URL. Please copy/paste the content manually.')
+      setNoteText(url)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handlePaste = (text) => {
+    setNoteText(text)
+  }
+
   return (
     <div className="studio-shell">
       <aside className="studio-rail">
-        {/* Logo */}
         <div className="studio-header">
           <div className="logo-mark">S</div>
           <span className="logo-name">Sage</span>
         </div>
 
-        {/* Main Actions */}
         <div className="studio-section">
-          <button className="studio-link active">+ Add content</button>
+          <button
+            className="studio-link active"
+            onClick={() => {
+              setNoteText('')
+              setOverview('')
+              setTakeaways([])
+              setKeywords([])
+            }}
+          >
+            + Add content
+          </button>
           <button className="studio-link">🔍 Search</button>
           <button className="studio-link">🕐 History</button>
         </div>
 
-        {/* Spaces */}
         <div className="studio-section">
           <p className="studio-label">Spaces</p>
           <button className="studio-link">+ Create Space</button>
           <button className="studio-link active">{displayName}'s Space</button>
         </div>
 
-        {/* Recents */}
         <div className="studio-section">
           <p className="studio-label">Recents</p>
           {savedSummaries.slice(0, 4).map((item) => (
@@ -140,12 +188,11 @@ ${noteText}`
                 setNoteText(item.text)
               }}
             >
-              ≡ {item.text.slice(0, 25) || 'Summary'}...
+              {item.text.slice(0, 25) || 'Summary'}...
             </button>
           ))}
         </div>
 
-        {/* User Profile at Bottom */}
         <div className="user-profile">
           <div className="user-avatar"></div>
           <span className="user-name">{displayName}</span>
@@ -155,33 +202,29 @@ ${noteText}`
       <main className="studio-main">
         <div className="studio-hero">
           <h1>Hey {displayName}, ready to learn?</h1>
-          
-          {/* Action Cards */}
+
           <div className="action-row">
-            <div className="action-tile">
-              <div className="icon">↑</div>
+            <div className="action-tile" onClick={() => setShowUploadModal(true)}>
+              <div className="icon">⭱</div>
               <div>
                 <p className="title">Upload</p>
                 <p className="sub">File, audio, video</p>
               </div>
             </div>
-            
-            <div className="action-tile">
+            <div className="action-tile" onClick={() => setShowLinkModal(true)}>
               <div className="icon">🔗</div>
               <div>
                 <p className="title">Link</p>
                 <p className="sub">YouTube, Website</p>
               </div>
             </div>
-            
-            <div className="action-tile">
+            <div className="action-tile" onClick={() => setShowPasteModal(true)}>
               <div className="icon">📋</div>
               <div>
                 <p className="title">Paste</p>
                 <p className="sub">Copied Text</p>
               </div>
             </div>
-            
             <div className="action-tile" onClick={() => setShowRecordModal(true)}>
               <div className="icon">🎙</div>
               <div>
@@ -191,7 +234,6 @@ ${noteText}`
             </div>
           </div>
 
-          {/* Prompt Bar */}
           <div className="prompt-bar">
             <input
               type="text"
@@ -201,8 +243,6 @@ ${noteText}`
               onKeyPress={(e) => e.key === 'Enter' && runSummarize()}
             />
             <div className="prompt-controls">
-              <span>Auto ▾</span>
-              <span>@ Add Context</span>
             </div>
             <button className="send-btn" onClick={runSummarize} disabled={loading}>
               ↑
@@ -211,7 +251,6 @@ ${noteText}`
 
           {status && <p className="muted">{status}</p>}
 
-          {/* Summary Output */}
           {(overview || takeaways.length > 0 || keywords.length > 0) && (
             <div className="summary-output">
               {overview && <p className="summary-overview">{overview}</p>}
@@ -237,14 +276,13 @@ ${noteText}`
           )}
         </div>
 
-        {/* Spaces Area */}
         <div className="spaces-area">
           <div className="spaces-header">
             <h2>Spaces</h2>
-            <span className="muted">Newest ▾</span>
+            <span className="muted">Newest ▼</span>
           </div>
           <div className="spaces-grid">
-            <div className="space-card dashed">+</div>
+            <div className="space-card dashed">＋</div>
             {savedSummaries.slice(0, 3).map((item) => (
               <div key={item.id} className="space-card">
                 <p className="space-title">{item.text.slice(0, 50)}</p>
@@ -254,6 +292,24 @@ ${noteText}`
           </div>
         </div>
       </main>
+
+      <UploadModal 
+        isOpen={showUploadModal} 
+        onClose={() => setShowUploadModal(false)}
+        onUpload={handleUpload}
+      />
+
+      <LinkModal 
+        isOpen={showLinkModal} 
+        onClose={() => setShowLinkModal(false)}
+        onSubmit={handleLink}
+      />
+
+      <PasteModal 
+        isOpen={showPasteModal} 
+        onClose={() => setShowPasteModal(false)}
+        onPaste={handlePaste}
+      />
 
       <RecordModal 
         isOpen={showRecordModal} 

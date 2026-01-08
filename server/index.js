@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { OAuth2Client } from 'google-auth-library'
+import fetch from 'node-fetch'
 
 dotenv.config()
 
@@ -106,6 +107,39 @@ app.post('/api/auth/google', async (req, res) => {
   } catch (error) {
     console.error('Google auth error:', error)
     res.status(401).json({ error: 'Invalid Google credential.' })
+  }
+})
+
+app.post('/api/fetch-url', async (req, res) => {
+  const { url } = req.body || {}
+
+  if (!url || typeof url !== 'string') {
+    return res.status(400).json({ error: 'URL is required.' })
+  }
+
+  if (!/^https?:\/\//i.test(url)) {
+    return res.status(400).json({ error: 'Only http/https URLs are allowed.' })
+  }
+
+  try {
+    const response = await fetch(url, { method: 'GET', redirect: 'follow' })
+    if (!response.ok) {
+      return res.status(400).json({ error: `Unable to fetch URL (status ${response.status})` })
+    }
+    const contentType = response.headers.get('content-type') || ''
+    if (!contentType.includes('text')) {
+      return res.status(400).json({ error: 'URL must return text content.' })
+    }
+    let text = await response.text()
+    // Trim excessively long responses
+    const MAX_LEN = 50000
+    if (text.length > MAX_LEN) {
+      text = text.slice(0, MAX_LEN)
+    }
+    res.json({ content: text })
+  } catch (error) {
+    console.error('Fetch URL error:', error)
+    res.status(500).json({ error: 'Failed to fetch URL.' })
   }
 })
 

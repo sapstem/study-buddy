@@ -3,6 +3,7 @@ import LandingPage from './LandingPage'
 import AuthPage from './AuthPage'
 import SummarizerPage from './SummarizerPage'
 import './App.css'
+import ConversationView from './ConversationView'
 
 function RequireAuth({ children }) {
   const token = localStorage.getItem('auth_token')
@@ -32,13 +33,17 @@ function AppFrame() {
 
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route
-          path="/summarizer"
-          element={(
-            <RequireAuth>
-              <SummarizerPage />
-            </RequireAuth>
-          )}
+        <Route path="/summarizer" element={(
+          <RequireAuth>
+            <SummarizerPage />
+          </RequireAuth>
+        )}
+        />
+        <Route path="/conversation/:id" element={(
+          <RequireAuth>
+            <ConversationView />
+          </RequireAuth>
+        )}
         />
         <Route path="/auth" element={<AuthPage />} />
       </Routes>
