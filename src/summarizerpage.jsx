@@ -150,7 +150,7 @@ ${noteText}`
       <aside className="studio-rail">
         <div className="studio-header">
           <div className="logo-mark">S</div>
-          <span className="logo-name">Sage</span>
+          <span className="logo-name">Iris</span>
         </div>
 
         <div className="studio-section">
