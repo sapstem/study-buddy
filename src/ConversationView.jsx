@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import FlashcardView from './FlashcardView'
 import './ConversationView.css'
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
@@ -236,11 +237,7 @@ User's question: ${userMessage}`
           )}
 
           {activeTab === 'flashcards' && (
-            <div className="feature-placeholder">
-              <div className="placeholder-icon">🃏</div>
-              <h2>Flashcards</h2>
-              <p>Coming soon! Generate flashcards from your notes.</p>
-            </div>
+            <FlashcardView conversation={conversation} />
           )}
 
           {activeTab === 'quizzes' && (

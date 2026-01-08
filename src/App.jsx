@@ -16,7 +16,7 @@ function AppFrame() {
 
   return (
     <>
-      {!isSummarizer && (
+      {location.pathname === '/'&& (
         <>
           <video autoPlay loop muted playsInline className="video-background">
             <source src="/background.mp4" type="video/mp4" />
