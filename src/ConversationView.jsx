@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import './ConversationView.css'
+
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
+const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null
 
 const base64UrlToBase64 = (input) => {
   let output = input.replace(/-/g, '+').replace(/_/g, '/')
@@ -26,6 +30,8 @@ function ConversationView() {
   const [conversation, setConversation] = useState(null)
   const [activeTab, setActiveTab] = useState('chat')
   const [chatInput, setChatInput] = useState('')
+  const [messages, setMessages] = useState([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     // Load conversation from localStorage using same key as summarizerpage
@@ -38,6 +44,12 @@ function ConversationView() {
       const found = summaries.find(s => s.id === parseInt(id))
       if (found) {
         setConversation(found)
+        // Load chat history if exists
+        const chatKey = `chat:${id}`
+        const savedChat = localStorage.getItem(chatKey)
+        if (savedChat) {
+          setMessages(JSON.parse(savedChat))
+        }
       } else {
         navigate('/summarizer')
       }
@@ -46,13 +58,62 @@ function ConversationView() {
     }
   }, [id, navigate])
 
+  const handleSendMessage = async () => {
+    if (!chatInput.trim() || !genAI) return
+
+    const userMessage = chatInput.trim()
+    setChatInput('')
+    
+    // Add user message to chat
+    const newMessages = [...messages, { role: 'user', content: userMessage }]
+    setMessages(newMessages)
+    setLoading(true)
+
+    try {
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
+      
+      // Build context from original content and chat history
+      const context = `
+You are a helpful study assistant. The user is studying the following content:
+
+${conversation.text}
+
+Summary: ${conversation.summary}
+
+Answer the user's question based on this content. Be concise and helpful.
+
+User's question: ${userMessage}`
+
+      const result = await model.generateContent(context)
+      const response = await result.response
+      const aiMessage = response.text()
+
+      // Add AI response to chat
+      const updatedMessages = [...newMessages, { role: 'assistant', content: aiMessage }]
+      setMessages(updatedMessages)
+      
+      // Save chat history to localStorage
+      const chatKey = `chat:${id}`
+      localStorage.setItem(chatKey, JSON.stringify(updatedMessages))
+    } catch (error) {
+      console.error('Failed to get response:', error)
+      const errorMessages = [...newMessages, { 
+        role: 'assistant', 
+        content: 'Sorry, I encountered an error. Please try again.' 
+      }]
+      setMessages(errorMessages)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   if (!conversation) {
     return <div>Loading...</div>
   }
 
   return (
     <div className="conversation-view">
-      {/* Sidebar - reuse from summarizer */}
+      {/* Sidebar */}
       <aside className="studio-rail">
         <div className="studio-header">
           <div className="logo-mark">S</div>
@@ -78,7 +139,6 @@ function ConversationView() {
             {conversation.text.slice(0, 50)}...
           </h1>
           <div className="header-actions">
-            <button className="upgrade-btn">Upgrade</button>
             <button className="share-btn">Share</button>
           </div>
         </div>
@@ -119,10 +179,12 @@ function ConversationView() {
         <div className="conversation-content">
           {activeTab === 'chat' && (
             <div className="chat-view">
+              {/* Summary Card */}
               <div className="summary-card">
                 <p>{conversation.summary}</p>
               </div>
 
+              {/* Takeaways */}
               {conversation.takeaways && conversation.takeaways.length > 0 && (
                 <div className="summary-section">
                   <h3>Key Takeaways</h3>
@@ -134,6 +196,7 @@ function ConversationView() {
                 </div>
               )}
 
+              {/* Keywords */}
               {conversation.keywords && conversation.keywords.length > 0 && (
                 <div className="summary-section">
                   <h3>Keywords</h3>
@@ -142,6 +205,31 @@ function ConversationView() {
                       <span key={i} className="chip">{k}</span>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Chat Messages */}
+              {messages.length > 0 && (
+                <div className="chat-messages-container">
+                  <h3 style={{ fontSize: '14px', fontWeight: '700', color: '#666', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '16px' }}>Conversation</h3>
+                  {messages.map((msg, i) => (
+                    <div key={i} className={`chat-message ${msg.role}`}>
+                      <div className="message-label">
+                        {msg.role === 'user' ? 'You' : 'Sage'}
+                      </div>
+                      <div className="message-content">
+                        {msg.content}
+                      </div>
+                    </div>
+                  ))}
+                  {loading && (
+                    <div className="chat-message assistant">
+                      <div className="message-label">Sage</div>
+                      <div className="message-content typing">
+                        <span></span><span></span><span></span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -176,17 +264,19 @@ function ConversationView() {
         <div className="conversation-input-bar">
           <input
             type="text"
-            placeholder="Learn anything"
+            placeholder="Ask a question about this content..."
             value={chatInput}
             onChange={(e) => setChatInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && !loading && handleSendMessage()}
+            disabled={loading}
           />
-          <div className="input-controls">
-            <button className="control-btn">📎</button>
-            <button className="control-btn">🎙</button>
-            <button className="control-btn voice-btn">🎤 Voice</button>
-          </div>
-          <span className="auto-label">Auto ▾</span>
-          <span className="context-label">@ Add Context</span>
+          <button 
+            className="send-message-btn"
+            onClick={handleSendMessage}
+            disabled={loading || !chatInput.trim()}
+          >
+            ↑
+          </button>
         </div>
       </main>
     </div>
