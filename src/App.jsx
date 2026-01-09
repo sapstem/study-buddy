@@ -16,7 +16,7 @@ function AppFrame() {
 
   return (
     <>
-      {location.pathname === '/'&& (
+      {(location.pathname === '/' || location.pathname === '/auth') && (
         <>
           <video autoPlay loop muted playsInline className="video-background">
             <source src="/background.mp4" type="video/mp4" />
