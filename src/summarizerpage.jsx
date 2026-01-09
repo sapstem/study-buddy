@@ -53,17 +53,55 @@ function SummarizerPage() {
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [showLinkModal, setShowLinkModal] = useState(false)
   const [showPasteModal, setShowPasteModal] = useState(false)
+  const [spaces, setSpaces] = useState([])
+  const [activeSpace, setActiveSpace] = useState(null)
+  const [showCreateSpace, setShowCreateSpace] = useState(false)
+  const [newSpaceName, setNewSpaceName] = useState('')
 
   useEffect(() => {
     const name = getDisplayName()
     setDisplayName(name)
     const items = loadSummaries(name)
     setSavedSummaries(items)
+    
+    // Load spaces
+    const spacesKey = name ? `spaces:${name}` : 'spaces:anon'
+    const savedSpaces = localStorage.getItem(spacesKey)
+    if (savedSpaces) {
+      setSpaces(JSON.parse(savedSpaces))
+    }
   }, [])
 
   useEffect(() => {
     saveSummaries(displayName, savedSummaries)
   }, [displayName, savedSummaries])
+
+  useEffect(() => {
+    // Save spaces
+    const spacesKey = displayName ? `spaces:${displayName}` : 'spaces:anon'
+    localStorage.setItem(spacesKey, JSON.stringify(spaces))
+  }, [displayName, spaces])
+
+  const createSpace = () => {
+    if (!newSpaceName.trim()) return
+    
+    const newSpace = {
+      id: Date.now(),
+      name: newSpaceName.trim(),
+      conversationIds: [],
+      createdAt: new Date().toLocaleString()
+    }
+    
+    setSpaces([newSpace, ...spaces])
+    setNewSpaceName('')
+    setShowCreateSpace(false)
+  }
+
+  const filteredSummaries = activeSpace
+    ? savedSummaries.filter(s => 
+        spaces.find(space => space.id === activeSpace)?.conversationIds.includes(s.id)
+      )
+    : savedSummaries
 
   const runSummarize = async () => {
     if (!noteText.trim()) {
@@ -150,7 +188,7 @@ ${noteText}`
       <aside className="studio-rail">
         <div className="studio-header">
           <div className="logo-mark">S</div>
-          <span className="logo-name">Iris</span>
+          <span className="logo-name">Sage</span>
         </div>
 
         <div className="studio-section">
@@ -165,32 +203,47 @@ ${noteText}`
           >
             + Add content
           </button>
-          <button className="studio-link">🔍 Search</button>
-          <button className="studio-link">🕐 History</button>
         </div>
 
         <div className="studio-section">
           <p className="studio-label">Spaces</p>
-          <button className="studio-link">+ Create Space</button>
-          <button className="studio-link active">{displayName}'s Space</button>
+          <button 
+            className="studio-link"
+            onClick={() => setShowCreateSpace(true)}
+          >
+            + Create Space
+          </button>
+          <button 
+            className={`studio-link ${!activeSpace ? 'active' : ''}`}
+            onClick={() => setActiveSpace(null)}
+          >
+            {displayName}'s Space
+          </button>
+          {spaces.map((space) => (
+            <button
+              key={space.id}
+              className={`studio-link ${activeSpace === space.id ? 'active' : ''}`}
+              onClick={() => setActiveSpace(space.id)}
+            >
+              {space.name}
+            </button>
+          ))}
         </div>
 
         <div className="studio-section">
           <p className="studio-label">Recents</p>
-          {savedSummaries.slice(0, 4).map((item) => (
+          {filteredSummaries.slice(0, 4).map((item) => (
             <button
               key={item.id}
               className="studio-link"
-              onClick={() => {
-                setOverview(item.summary || '')
-                setTakeaways(item.takeaways || [])
-                setKeywords(item.keywords || [])
-                setNoteText(item.text)
-              }}
+              onClick={() => navigate(`/conversation/${item.id}`)}
             >
               {item.text.slice(0, 25) || 'Summary'}...
             </button>
           ))}
+          {filteredSummaries.length === 0 && (
+            <p className="studio-empty">No recent conversations</p>
+          )}
         </div>
 
         <div className="user-profile">
@@ -282,13 +335,29 @@ ${noteText}`
             <span className="muted">Newest ▼</span>
           </div>
           <div className="spaces-grid">
-            <div className="space-card dashed">＋</div>
-            {savedSummaries.slice(0, 3).map((item) => (
-              <div key={item.id} className="space-card">
-                <p className="space-title">{item.text.slice(0, 50)}</p>
-                <p className="space-sub">{item.date}</p>
-              </div>
-            ))}
+            <div 
+              className="space-card dashed"
+              onClick={() => setShowCreateSpace(true)}
+            >
+              ＋
+            </div>
+            {spaces.map((space) => {
+              const spaceConvos = savedSummaries.filter(s => 
+                space.conversationIds.includes(s.id)
+              )
+              return (
+                <div 
+                  key={space.id} 
+                  className="space-card"
+                  onClick={() => setActiveSpace(space.id)}
+                >
+                  <p className="space-title">{space.name}</p>
+                  <p className="space-sub">
+                    {spaceConvos.length} conversation{spaceConvos.length !== 1 ? 's' : ''}
+                  </p>
+                </div>
+              )
+            })}
           </div>
         </div>
       </main>
@@ -315,6 +384,54 @@ ${noteText}`
         isOpen={showRecordModal} 
         onClose={() => setShowRecordModal(false)} 
       />
+
+      {/* Create Space Modal */}
+      {showCreateSpace && (
+        <div className="modal-overlay" onClick={() => setShowCreateSpace(false)}>
+          <div className="create-space-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Create Space</h2>
+              <button className="close-btn" onClick={() => setShowCreateSpace(false)}>×</button>
+            </div>
+            <div style={{ padding: '20px' }}>
+              <input
+                type="text"
+                placeholder="Space name (e.g., Computer Science, History)"
+                value={newSpaceName}
+                onChange={(e) => setNewSpaceName(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && createSpace()}
+                style={{
+                  width: '100%',
+                  padding: '14px',
+                  border: '1px solid #e5e5e5',
+                  borderRadius: '8px',
+                  fontSize: '15px',
+                  outline: 'none'
+                }}
+              />
+              <button
+                onClick={createSpace}
+                disabled={!newSpaceName.trim()}
+                style={{
+                  width: '100%',
+                  marginTop: '16px',
+                  padding: '14px',
+                  background: '#1a1a1a',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '15px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  opacity: !newSpaceName.trim() ? 0.5 : 1
+                }}
+              >
+                Create Space
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
