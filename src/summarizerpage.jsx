@@ -57,6 +57,7 @@ function SummarizerPage() {
   const [activeSpace, setActiveSpace] = useState(null)
   const [showCreateSpace, setShowCreateSpace] = useState(false)
   const [newSpaceName, setNewSpaceName] = useState('')
+  const [isHydrated, setIsHydrated] = useState(false)
 
   useEffect(() => {
     const name = getDisplayName()
@@ -70,17 +71,38 @@ function SummarizerPage() {
     if (savedSpaces) {
       setSpaces(JSON.parse(savedSpaces))
     }
+    
+    // Load active space
+    const activeSpaceKey = name ? `activeSpace:${name}` : 'activeSpace:anon'
+    const savedActiveSpace = localStorage.getItem(activeSpaceKey)
+    if (savedActiveSpace && savedActiveSpace !== 'null') {
+      setActiveSpace(Number(savedActiveSpace))
+    }
+    setIsHydrated(true)
   }, [])
 
   useEffect(() => {
+    if (!isHydrated) return
     saveSummaries(displayName, savedSummaries)
-  }, [displayName, savedSummaries])
+  }, [displayName, savedSummaries, isHydrated])
 
   useEffect(() => {
+    if (!isHydrated) return
     // Save spaces
     const spacesKey = displayName ? `spaces:${displayName}` : 'spaces:anon'
     localStorage.setItem(spacesKey, JSON.stringify(spaces))
-  }, [displayName, spaces])
+  }, [displayName, spaces, isHydrated])
+
+  useEffect(() => {
+    if (!isHydrated) return
+    // Save active space
+    const activeSpaceKey = displayName ? `activeSpace:${displayName}` : 'activeSpace:anon'
+    if (activeSpace !== null) {
+      localStorage.setItem(activeSpaceKey, activeSpace.toString())
+    } else {
+      localStorage.removeItem(activeSpaceKey)
+    }
+  }, [displayName, activeSpace, isHydrated])
 
   const createSpace = () => {
     if (!newSpaceName.trim()) return
@@ -140,15 +162,25 @@ ${noteText}`
       setOverview(newItem.summary)
       setTakeaways(newItem.takeaways)
       setKeywords(newItem.keywords)
-      setSavedSummaries([newItem, ...savedSummaries])
+      
+      const updatedSummaries = [newItem, ...savedSummaries]
+      setSavedSummaries(updatedSummaries)
+      
+      // Save summaries immediately to localStorage
+      saveSummaries(displayName, updatedSummaries)
       
       // If viewing a space, add conversation to that space
       if (activeSpace) {
-        setSpaces(spaces.map(space => 
+        const updatedSpaces = spaces.map(space => 
           space.id === activeSpace 
             ? { ...space, conversationIds: [...space.conversationIds, newItem.id] }
             : space
-        ))
+        )
+        setSpaces(updatedSpaces)
+        
+        // Save immediately to localStorage before navigating
+        const spacesKey = displayName ? `spaces:${displayName}` : 'spaces:anon'
+        localStorage.setItem(spacesKey, JSON.stringify(updatedSpaces))
       }
       
       navigate(`/conversation/${newItem.id}`)
@@ -229,7 +261,11 @@ ${noteText}`
             <button
               key={space.id}
               className={`studio-link ${activeSpace === space.id ? 'active' : ''}`}
-              onClick={() => setActiveSpace(space.id)}
+              onClick={() => {
+                setActiveSpace(space.id)
+                const activeSpaceKey = displayName ? `activeSpace:${displayName}` : 'activeSpace:anon'
+                localStorage.setItem(activeSpaceKey, space.id.toString())
+              }}
             >
               {space.name}
             </button>
@@ -260,7 +296,33 @@ ${noteText}`
 
       <main className="studio-main">
         <div className="studio-hero">
-          <h1>Hey {displayName}, ready to learn?</h1>
+          {activeSpace ? (
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+              <button 
+                onClick={() => {
+                  setActiveSpace(null)
+                  const activeSpaceKey = displayName ? `activeSpace:${displayName}` : 'activeSpace:anon'
+                  localStorage.removeItem(activeSpaceKey)
+                }}
+                style={{
+                  background: '#f5f5f5',
+                  border: '1px solid #e5e5e5',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  marginBottom: '10px'
+                }}
+              >
+                ← All Notes
+              </button>
+              <h1>
+                {spaces.find(s => s.id === activeSpace)?.name || 'Space'}
+              </h1>
+            </div>
+          ) : (
+            <h1>Hey {displayName}, ready to learn?</h1>
+          )}
 
           <div className="action-row">
             <div className="action-tile" onClick={() => setShowUploadModal(true)}>
@@ -356,7 +418,11 @@ ${noteText}`
                 <div 
                   key={space.id} 
                   className="space-card"
-                  onClick={() => setActiveSpace(space.id)}
+                  onClick={() => {
+                    setActiveSpace(space.id)
+                    const activeSpaceKey = displayName ? `activeSpace:${displayName}` : 'activeSpace:anon'
+                    localStorage.setItem(activeSpaceKey, space.id.toString())
+                  }}
                 >
                   <p className="space-title">{space.name}</p>
                   <p className="space-sub">
