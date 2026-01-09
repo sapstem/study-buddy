@@ -101,7 +101,9 @@ function SummarizerPage() {
     ? savedSummaries.filter(s => 
         spaces.find(space => space.id === activeSpace)?.conversationIds.includes(s.id)
       )
-    : savedSummaries
+    : savedSummaries.filter(s => 
+        !spaces.some(space => space.conversationIds.includes(s.id))
+      )
 
   const runSummarize = async () => {
     if (!noteText.trim()) {
@@ -139,6 +141,16 @@ ${noteText}`
       setTakeaways(newItem.takeaways)
       setKeywords(newItem.keywords)
       setSavedSummaries([newItem, ...savedSummaries])
+      
+      // If viewing a space, add conversation to that space
+      if (activeSpace) {
+        setSpaces(spaces.map(space => 
+          space.id === activeSpace 
+            ? { ...space, conversationIds: [...space.conversationIds, newItem.id] }
+            : space
+        ))
+      }
+      
       navigate(`/conversation/${newItem.id}`)
     } catch (error) {
       console.error(error)
@@ -212,12 +224,6 @@ ${noteText}`
             onClick={() => setShowCreateSpace(true)}
           >
             + Create Space
-          </button>
-          <button 
-            className={`studio-link ${!activeSpace ? 'active' : ''}`}
-            onClick={() => setActiveSpace(null)}
-          >
-            {displayName}'s Space
           </button>
           {spaces.map((space) => (
             <button
@@ -345,6 +351,7 @@ ${noteText}`
               const spaceConvos = savedSummaries.filter(s => 
                 space.conversationIds.includes(s.id)
               )
+              const recentConvo = spaceConvos[0]
               return (
                 <div 
                   key={space.id} 
@@ -355,6 +362,9 @@ ${noteText}`
                   <p className="space-sub">
                     {spaceConvos.length} conversation{spaceConvos.length !== 1 ? 's' : ''}
                   </p>
+                  {recentConvo && (
+                    <p className="space-preview">{recentConvo.text.slice(0, 50)}...</p>
+                  )}
                 </div>
               )
             })}

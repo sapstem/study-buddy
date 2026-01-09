@@ -432,6 +432,13 @@
   color: #666;
 }
 
+.space-preview {
+  font-size: 13px;
+  color: #666;
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
 @media (max-width: 1024px) {
   .action-row {
     grid-template-columns: repeat(2, 1fr);
