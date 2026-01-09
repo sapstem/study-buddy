@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import FlashcardView from './FlashcardView'
+import NotesView from './NotesView'
 import './ConversationView.css'
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
@@ -33,6 +34,7 @@ function ConversationView() {
   const [chatInput, setChatInput] = useState('')
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     // Load conversation from localStorage using same key as summarizerpage
@@ -114,8 +116,19 @@ User's question: ${userMessage}`
 
   return (
     <div className="conversation-view">
-      {/* Sidebar */}
-      <aside className="studio-rail">
+      {/* Hamburger Menu Button */}
+      <button 
+        className="hamburger-menu"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        aria-label="Toggle menu"
+      >
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      {/* Sidebar - toggleable */}
+      <aside className={`studio-rail ${sidebarOpen ? 'open' : ''}`}>
         <div className="studio-header">
           <div className="logo-mark">S</div>
           <span className="logo-name">Sage</span>
@@ -123,15 +136,71 @@ User's question: ${userMessage}`
         
         <button 
           className="studio-link"
-          onClick={() => navigate('/summarizer')}
+          onClick={() => {
+            navigate('/summarizer')
+            setSidebarOpen(false)
+          }}
         >
           ← Back to Home
         </button>
+
+        <div className="sidebar-actions">
+          <button 
+            className="sidebar-action-btn"
+            onClick={() => {
+              setActiveTab('chat')
+              setSidebarOpen(false)
+            }}
+          >
+            <span className="action-icon">💬</span>
+            <span>Chat Bot</span>
+          </button>
+
+          <button 
+            className="sidebar-action-btn"
+            onClick={() => {
+              setActiveTab('notes')
+              setSidebarOpen(false)
+            }}
+          >
+            <span className="action-icon">📄</span>
+            <span>Document</span>
+          </button>
+
+          <button 
+            className="sidebar-action-btn"
+            onClick={() => {
+              setActiveTab('flashcards')
+              setSidebarOpen(false)
+            }}
+          >
+            <span className="action-icon">🃏</span>
+            <span>Flashcards</span>
+          </button>
+
+          <button 
+            className="sidebar-action-btn"
+            onClick={() => {
+              setActiveTab('quizzes')
+              setSidebarOpen(false)
+            }}
+          >
+            <span className="action-icon">📝</span>
+            <span>Quiz</span>
+          </button>
+        </div>
       </aside>
 
+      {/* Overlay - click to close sidebar */}
+      {sidebarOpen && (
+        <div 
+          className="sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Main Content */}
-      <main className="conversation-main">
-        {/* Top Bar */}
+      <main className="conversation-main">{/* Top Bar */}
         <div className="conversation-header">
           <button className="back-btn" onClick={() => navigate('/summarizer')}>
             ←
@@ -249,11 +318,7 @@ User's question: ${userMessage}`
           )}
 
           {activeTab === 'notes' && (
-            <div className="feature-placeholder">
-              <div className="placeholder-icon">📄</div>
-              <h2>Notes</h2>
-              <p>Coming soon! View and edit your original notes.</p>
-            </div>
+            <NotesView conversation={conversation} />
           )}
         </div>
 
